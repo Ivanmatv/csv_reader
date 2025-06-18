@@ -1,6 +1,8 @@
 import csv
 import argparse
 
+from tabulate import tabulate
+
 
 def read_csv(file_path):
     """Чтение CSV файла."""
@@ -13,6 +15,9 @@ parser = argparse.ArgumentParser(description="Чтение CSV файла")
 parser.add_argument("file")
 args = parser.parse_args()
 
-rows = read_csv(args.file)
+text = read_csv(args.file)
 
-print(rows)
+header = text[0] if text else []  # чтение заголовков
+data = text[1:] if len(text) > 1 else []  # чтение остальных строк
+
+print(tabulate(data, headers=header))
