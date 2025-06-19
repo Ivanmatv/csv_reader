@@ -1,48 +1,93 @@
-import csv
 import argparse
+import csv
+import re
 
 from tabulate import tabulate
 
 
-def read_csv(file_path: str) -> list:
+def read_csv(file_path):
     """Чтение CSV файла."""
-    with open(file_path, newline="", encoding="utf-8") as file:
-        reader = csv.reader(file)
-        return [row for row in reader]
+    with open(file_path, mode='r') as file:
+        reader = csv.DictReader(file)
+        data = list(reader)
+    return data
 
 
-def filter_csv(data: list, condition: str) -> list:
+def filter_csv(data, condition):
     """Фильтрация данных по условию."""
-    column, operator, value = condition.split()
-    value = value.strip()
+    match = re.match(r"(\w+)\s*(>=|<=|<|>|=)\s*(\S+)", condition)
+    if not match:
+        print("Invalid filter condition")
+        return []
 
-    column_index = None
-    for i, header in enumerate(data[0]):
-        if header == column:
-            column_index = i
-            break
+    column, operator, value = match.groups()
 
-    if operator == ">":
-        return [row for row in data[1:] if float(row[column_index]) > float(value)]
-    elif operator == "<":
-        return [row for row in data[1:] if float(row[column_index]) < float(value)]
-    elif operator == "=":
-        return [row for row in data[1:] if row[column_index] == value]
+    try:                            # Обрабатываем строки
+        value = float(value)
+        is_numeric = True
+    except ValueError:
+        value = value.strip()
+        is_numeric = False
+
+    if is_numeric:
+        if operator == '>':
+            return [row for row in data if float(row[column]) > value]
+        elif operator == '<':
+            return [row for row in data if float(row[column]) < value]
+        elif operator == '=':
+            return [row for row in data if float(row[column]) == value]
+        elif operator == '>=':
+            return [row for row in data if float(row[column]) >= value]
+        elif operator == '<=':
+            return [row for row in data if float(row[column]) <= value]
     else:
-        raise ValueError(f"Unsupported operator '{operator}'")
+        if operator == '=':
+            return [row for row in data if row[column] == value]
+
+    return []
 
 
-parser = argparse.ArgumentParser(description="Чтение CSV файла")
-parser.add_argument("file")
-parser.add_argument("--where")
+def aggregate_csv(data, aggregate_condition):
+    """Агригирование данных по условиям."""
+    column, aggregation_type = aggregate_condition.split('=')
+    column = column.strip()
+    aggregation_type = aggregation_type.strip()
+    values = [float(row['rating']) for row in data]
 
-args = parser.parse_args()
+    if aggregation_type == 'avg':
+        return sum(values) / len(values)
+    elif aggregation_type == 'min':
+        return min(values)
+    elif aggregation_type == 'max':
+        return max(values)
+    return None
 
-text = read_csv(args.file)  # чтение csv файла
-header = text[0] if text else []  # чтение заголовков
-data = text[1:] if len(text) > 1 else []  # чтение остальных строк
 
-if args.where:
-    data = filter_csv(text, args.where)
+def main():
+    """Основная функция."""
+    parser = argparse.ArgumentParser(description="Чтение CSV файла")
+    parser.add_argument('--file', type=str, required=True)
+    parser.add_argument('--where', type=str)
+    parser.add_argument('--aggregate', type=str)
 
-print(tabulate(data, headers=header, tablefmt="grid"))
+    args = parser.parse_args()
+
+    data = read_csv(args.file)
+
+    if args.where:
+        data = filter_csv(data, args.where)
+
+    if args.aggregate:
+        result = aggregate_csv(data, args.aggregate)
+        aggregation_type = args.aggregate.split('=')[1].strip()
+        table = [[aggregation_type], [result]]
+        print(tabulate(table, tablefmt='grid', stralign='center'))
+        return
+
+    headers = data[0].keys() if data else []
+    table = [row.values() for row in data]
+    print(tabulate(table, headers=headers, tablefmt='grid'))
+
+
+if __name__ == "__main__":
+    main()
