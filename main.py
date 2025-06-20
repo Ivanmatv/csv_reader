@@ -3,9 +3,10 @@ import csv
 import re
 
 from tabulate import tabulate
+from typing import List, Dict, Union, Optional, Any
 
 
-def read_csv(file_path):
+def read_csv(file_path: str) -> List[Dict[str, str]]:
     """Чтение CSV файла."""
     with open(file_path, mode='r') as file:
         reader = csv.DictReader(file)
@@ -13,7 +14,7 @@ def read_csv(file_path):
     return data
 
 
-def filter_csv(data, condition):
+def filter_csv(data: List[Dict[str, str]], condition: str) -> List[Dict[str, str]]:
     """Фильтрация данных по условию."""
     match = re.match(r"(\w+)\s*(>=|<=|<|>|=)\s*(\S+)", condition)
     if not match:
@@ -47,7 +48,7 @@ def filter_csv(data, condition):
     return []
 
 
-def aggregate_csv(data, aggregate_condition):
+def aggregate_csv(data: List[Dict[str, str]], aggregate_condition: str) -> Optional[float]:
     """Агригирование данных по условиям."""
     column, aggregation_type = aggregate_condition.split('=')
     column = column.strip()
@@ -63,7 +64,7 @@ def aggregate_csv(data, aggregate_condition):
     return None
 
 
-def main():
+def main() -> None:
     """Основная функция."""
     parser = argparse.ArgumentParser(description="Чтение CSV файла")
     parser.add_argument('--file', type=str, required=True)

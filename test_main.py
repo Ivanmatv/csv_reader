@@ -1,11 +1,13 @@
 import pytest
 
+from typing import List, Dict
+
 from main import filter_csv, aggregate_csv
 
 
-def test_filter_csv():
+def test_filter_csv() -> None:
     """Тестирование функции фильтрации данных"""
-    data = [
+    data: List[Dict[str, str]] = [
         {"name": "iphone 15 pro", "brand": "apple", "price": "999", "rating": "4.9"},
         {"name": "galaxy s23 ultra", "brand": "samsung", "price": "1199", "rating": "4.8"},
         {"name": "redmi note 12", "brand": "xiaomi", "price": "199", "rating": "4.6"},
@@ -17,9 +19,9 @@ def test_filter_csv():
     assert filtered[1]['name'] == 'galaxy s23 ultra'
 
 
-def test_aggregate_csv_avg():
+def test_aggregate_csv_avg() -> None:
     """Тестирование агрегации (среднее значение)"""
-    data = [
+    data: List[Dict[str, str]] = [
         {"name": "iphone 15 pro", "brand": "apple", "price": "999", "rating": "4.9"},
         {"name": "galaxy s23 ultra", "brand": "samsung", "price": "1199", "rating": "4.8"},
         {"name": "redmi note 12", "brand": "xiaomi", "price": "199", "rating": "4.6"},
@@ -30,9 +32,9 @@ def test_aggregate_csv_avg():
     assert result == pytest.approx(expected_avg)  # Используем approx для сравнения float
 
 
-def test_aggregate_csv_min():
+def test_aggregate_csv_min() -> None:
     """Тестирование агрегации (минимальное значение)"""
-    data = [
+    data: List[Dict[str, str]] = [
         {"name": "iphone 15 pro", "brand": "apple", "price": "999", "rating": "4.9"},
         {"name": "galaxy s23 ultra", "brand": "samsung", "price": "1199", "rating": "4.8"},
         {"name": "redmi note 12", "brand": "xiaomi", "price": "199", "rating": "4.6"},
@@ -42,9 +44,9 @@ def test_aggregate_csv_min():
     assert result == 4.6
 
 
-def test_aggregate_csv_max():
+def test_aggregate_csv_max() -> None:
     """Тестирование агрегации (максимальное значение)"""
-    data = [
+    data: List[Dict[str, str]] = [
         {"name": "iphone 15 pro", "brand": "apple", "price": "999", "rating": "4.9"},
         {"name": "galaxy s23 ultra", "brand": "samsung", "price": "1199", "rating": "4.8"},
         {"name": "redmi note 12", "brand": "xiaomi", "price": "199", "rating": "4.6"},
