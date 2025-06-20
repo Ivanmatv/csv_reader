@@ -10,6 +10,7 @@
 - Красивый вывод в виде таблиц с помощью `tabulate`
 
 ## Примеры запуска приложения 
+-  В папке images примеры запусков
 
 1. Вывод таблицы из файла 
 ```bash
@@ -21,11 +22,11 @@ python main.py --file test_file.csv --where "rating>4.7"
 ```
 3. Агрегация данных (средний рейтинг)
 ```bash
-python main.py --file data.csv --aggregate "rating=avg"
+python main.py --file test_file.csv --aggregate "rating=avg"
 ```
 4. Комбинирование фильтрации и агрегации
 ```bash
-python main.py --file data.csv --where "rating>4.7" --aggregate "rating=avg"
+python main.py --file test_file.csv --where "rating>4.7" --aggregate "rating=avg"
 ```
 5. Запуск теста
 ```bash
